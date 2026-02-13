@@ -6,11 +6,11 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
+ 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-        <!-- Styles / Scripts -->
+     
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
@@ -55,6 +55,98 @@
                 <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
                     <h1 class="mb-1 font-medium">Let's get stted</h1>
                     <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Laravel has an incredibly rich ecosystem. <br>We suggest starting with the following.</p>
+
+                    {{-- Categories from database with expandable "more" toggle --}}
+                    <div class="mb-4">
+                        <div class="relative inline-block">
+                            <h2 class="font-medium mb-2 flex items-center gap-2">
+                                <span>Categories</span>
+                                <button id="categories-toggle" type="button" class="p-1 text-sm text-[#1b1b18] cursor-pointer" aria-label="Toggle categories">
+                                    <svg id="categories-toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-150" style="color: #1b1b18; display: inline-block;">
+                                        <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </h2>
+
+                            <div id="categories-panel" class="hidden absolute left-0 mt-2 w-[320px] max-w-full bg-white dark:bg-[#161615] border border-[#e3e3e0] dark:border-[#3E3E3A] rounded shadow p-3 z-50 overflow-auto" style="max-height:240px;">
+                                @if(isset($categories) && $categories->count())
+                                    <ul class="list-none space-y-1 text-sm">
+                                        @foreach($categories as $category)
+                                            <li class="py-1 border-b last:border-b-0 border-transparent dark:border-[#3E3E3A]">{{ $category->title ?? $category->name ?? 'Category #'.$category->id }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <div class="text-sm text-[#706f6c] dark:text-[#A1A09A]">No categories yet.</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        @php
+                            $visible = 5;
+                            $total = isset($categories) ? $categories->count() : 0;
+                        @endphp
+
+                        @if(isset($categories) && $total > 0)
+                            <ul class="list-disc ml-4 text-sm" id="categories-list">
+                                @foreach($categories->take($visible) as $category)
+                                    <li>{{ $category->title ?? $category->name ?? 'Category #'.$category->id }}</li>
+                                @endforeach
+
+                                @if($total > $visible)
+                                    <li class="mt-2">
+                                        <button id="show-more-btn" type="button" data-original="+{{ $total - $visible }}" class="flex items-center gap-2 text-sm text-[#f53003]">
+                                            <span id="more-icon" class="transition-transform duration-150">
+                                             
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+                                            </span>
+                                            <span id="more-badge" class="underline">+{{ $total - $visible }}</span>
+                                        </button>
+                                    </li>
+                                @endif
+                            </ul>
+
+                            @if($total > $visible)
+                                <div id="more-categories" class="ml-4 mt-2 hidden">
+                                    <ul class="list-disc text-sm">
+                                        @foreach($categories->slice($visible) as $category)
+                                            <li>{{ $category->title ?? $category->name ?? 'Category #'.$category->id }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                        @else
+                            <p class="text-sm text-[#706f6c]">No categories yet.</p>
+                        @endif
+                    </div>
+                    
+                    {{-- Simple add-category form --}}
+                    <div class="mb-4">
+                        @if(session('status'))
+                            <div class="mb-3 text-sm text-green-600">{{ session('status') }}</div>
+                        @endif
+                        <h3 class="font-medium mb-2">Add Category</h3>
+
+                        <form action="/categories" method="POST">
+                            @csrf
+
+                            <div class="mb-2">
+                                <label class="block text-sm mb-1">Title</label>
+                                <input name="title" class="w-full px-2 py-1 border rounded" placeholder="Category title" required>
+                                @error('title') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="block text-sm mb-1">Description (optional)</label>
+                                <textarea name="description" class="w-full px-2 py-1 border rounded" rows="2" placeholder="Short description"></textarea>
+                                @error('description') <div class="text-red-500 text-sm">{{ $message }}</div> @enderror
+                            </div>
+
+                            <button class="px-4 py-1 bg-[#1b1b18] text-white rounded">Add</button>
+                        </form>
+                    </div>
                     <ul class="flex flex-col mb-4 lg:mb-6">
                         <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:top-1/2 before:bottom-0 before:left-[0.4rem] before:absolute">
                             <span class="relative py-1 bg-white dark:bg-[#161615]">
@@ -274,5 +366,67 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+
+        <script>
+       
+            document.addEventListener('DOMContentLoaded', function () {
+                const btn = document.getElementById('show-more-btn');
+                const more = document.getElementById('more-categories');
+                if (!btn || !more) return;
+
+                const original = btn.dataset.original || btn.textContent;
+                const icon = document.getElementById('more-icon');
+                const badge = document.getElementById('more-badge');
+
+                btn.addEventListener('click', function () {
+                    const isHidden = more.classList.contains('hidden');
+                    if (isHidden) {
+                        more.classList.remove('hidden');
+                       
+                        if (icon) icon.style.transform = 'rotate(180deg)';
+                        if (badge) badge.textContent = 'less';
+                    } else {
+                        more.classList.add('hidden');
+                        if (icon) icon.style.transform = '';
+                        if (badge) badge.textContent = original;
+                    }
+                });
+
+             
+                const catToggle = document.getElementById('categories-toggle');
+                const catIcon = document.getElementById('categories-toggle-icon');
+                const panel = document.getElementById('categories-panel');
+
+                if (catToggle && panel) {
+                    catToggle.addEventListener('click', function (ev) {
+                        ev.stopPropagation();
+                        const isHidden = panel.classList.contains('hidden');
+                        if (isHidden) {
+                            panel.classList.remove('hidden');
+                            if (catIcon) catIcon.style.transform = 'rotate(90deg)';
+                        } else {
+                            panel.classList.add('hidden');
+                            if (catIcon) catIcon.style.transform = '';
+                            if (more && !more.classList.contains('hidden')) {
+                                more.classList.add('hidden');
+                                if (icon) icon.style.transform = '';
+                                if (badge) badge.textContent = original;
+                            }
+                        }
+                    });
+
+                  
+                    document.addEventListener('click', function (e) {
+                        if (!panel.classList.contains('hidden')) {
+                            const target = e.target;
+                            if (!panel.contains(target) && !catToggle.contains(target)) {
+                                panel.classList.add('hidden');
+                                if (catIcon) catIcon.style.transform = '';
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
     </body>
 </html>
