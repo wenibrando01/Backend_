@@ -7,11 +7,13 @@ use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+   
     public function run(): void
     {
-        //
+        $categories = ['Electronics', 'Books', 'Clothing', 'Toys', 'Furniture'];
+
+        foreach ($categories as $title) {
+            \App\Models\Category::firstOrCreate(['title' => $title]);
+        }
     }
 }
