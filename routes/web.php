@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models\Category;
+use App\Http\Controllers\PostController;
 
 // Existing home route
 Route::get('/', function () {
@@ -25,3 +26,6 @@ Route::get('/create-categories', function () {
 
     return redirect('/wenibrando'); // redirect to new page instead of /
 });
+
+// Posts resource routes
+Route::resource('posts', PostController::class);
