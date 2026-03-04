@@ -12,13 +12,13 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        // Seed the user
+        
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
-        // Seed categories and posts
+        
         $this->call([
             CategorySeeder::class,
             PostSeeder::class,

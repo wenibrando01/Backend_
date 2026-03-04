@@ -7,13 +7,13 @@ use Illuminate\Http\Request;
 
 
 Route::get('/', function () {
-    $categories = Category::orderByDesc('id')->take(5)->get();
+    $categories = Category::take(5)->get();
     return view('welcome', compact('categories'));
 });
 
 
 Route::get('/wenibrando', function () {
-    $categories = Category::orderByDesc('id')->take(5)->get();
+    $categories = Category::take(5)->get();
     return view('wenibrando', compact('categories'));
 });
 
