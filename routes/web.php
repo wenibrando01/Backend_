@@ -1,33 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Category;
 use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 
-
 Route::get('/', function () {
-    $categories = Category::take(5)->get();
-    return view('welcome', compact('categories'));
+    return redirect()->route('posts.index');
 });
-
-
-Route::get('/wenibrando', function () {
-    $categories = Category::take(5)->get();
-    return view('wenibrando', compact('categories'));
-});
-
-
-Route::get('/create-categories', function () {
-    $categories = ['Electronics', 'Books', 'Clothing', 'Toys', 'Furniture'];
-
-    foreach ($categories as $name) {
-        Category::firstOrCreate(['title' => $name]);
-    }
-
-    return redirect('/wenibrando'); 
-});
-
 
 Route::resource('posts', PostController::class);
 
@@ -40,5 +19,5 @@ Route::post('/categories', function (Request $request) {
 
     \App\Models\Category::create($data);
 
-    return redirect('/')->with('status', 'Category added');
+    return redirect()->route('posts.index')->with('status', 'Category added');
 });
