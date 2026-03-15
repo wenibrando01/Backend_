@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('school_days', function (Blueprint $table) {
             $table->id();
             $table->date('date')->unique();
-            $table->enum('type', ['class', 'holiday', 'event'])->default('class');
-            $table->boolean('is_school_day')->default(true);
-            $table->unsignedSmallInteger('attendance_count')->default(0);
-            $table->string('description')->nullable();
+            $table->unsignedTinyInteger('attendance_rate')->default(0);
+            $table->boolean('is_holiday')->default(false);
             $table->timestamps();
         });
     }

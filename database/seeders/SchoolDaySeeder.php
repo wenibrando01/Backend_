@@ -2,69 +2,49 @@
 
 namespace Database\Seeders;
 
-use App\Models\SchoolDay;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
+use App\Models\SchoolDay;
+use Carbon\Carbon;
 
 class SchoolDaySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        // Generate an academic year around the current date
-        $start = now()->startOfYear()->addMonths(7)->startOfMonth(); // approx August 1
-        $end = (clone $start)->addMonths(10); // ~10 month academic year
-
-        $current = $start->copy();
-
-        $holidays = [
-            'New Year Holiday',
-            'Independence Day',
-            'Founders Day',
-            'Midterm Break',
-            'End of Term Break',
+        $eventTemplates = [
+            'Orientation Program',
+            'Department Meeting',
+            'Laboratory Session',
+            'Midterm Examination',
+            'Seminar Workshop',
+            'Sports Activity',
+            'Club Event',
+            'Faculty Development Day',
+            'Research Presentation',
+            'Final Examination',
         ];
 
-        while ($current->lte($end)) {
-            $isWeekend = in_array($current->dayOfWeekIso, [6, 7], true);
+        $year = (int) now()->format('Y');
+        $start = Carbon::createFromDate($year, 1, 1);
+        $end = Carbon::createFromDate($year, 12, 31);
 
-            $type = 'class';
-            $isSchoolDay = ! $isWeekend;
+        for ($date = $start; $date->lte($end); $date->addDay()) {
+            $isHoliday = $date->isWeekend();
+            $attendance = $isHoliday ? 0 : rand(75, 100);
             $description = null;
-            $attendance = 0;
 
-            if ($isWeekend) {
-                $type = 'holiday';
-                $isSchoolDay = false;
-                $description = 'Weekend';
-            } elseif (fake()->boolean(5)) {
-                // 5% chance of special holiday or event
-                if (fake()->boolean()) {
-                    $type = 'holiday';
-                    $isSchoolDay = false;
-                    $description = Arr::random($holidays);
-                } else {
-                    $type = 'event';
-                    $description = 'School event';
-                }
+            if ($isHoliday) {
+                $description = 'Weekend / holiday';
+            } elseif (rand(1, 100) <= 35) {
+                $description = $eventTemplates[array_rand($eventTemplates)];
             }
 
-            if ($isSchoolDay) {
-                $attendance = fake()->numberBetween(300, 500);
-            }
-
-            SchoolDay::create([
-                'date' => $current->toDateString(),
-                'type' => $type,
-                'is_school_day' => $isSchoolDay,
-                'attendance_count' => $attendance,
+            SchoolDay::updateOrCreate([
+                'date' => $date->format('Y-m-d'),
+            ], [
+                'attendance_rate' => $attendance,
+                'is_holiday' => $isHoliday,
                 'description' => $description,
             ]);
-
-            $current->addDay();
         }
     }
 }

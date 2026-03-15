@@ -11,9 +11,10 @@ class SchoolDay extends Model
 
     protected $fillable = [
         'date',
-        'type',
-        'is_school_day',
-        'attendance_count',
+        'start_time',
+        'end_time',
         'description',
+        'attendance_rate',
+        'is_holiday',
     ];
 }
