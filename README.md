@@ -2,10 +2,32 @@
 
 Laravel REST API backend for the School Dashboard project.
 
+
 ## Tech Stack
 
-- Laravel + Sanctum (token-based API auth)
-- MySQL/PostgreSQL
+### Backend
+- **PHP**: ^8.2
+- **Laravel Framework**: ^12.0
+- **Laravel Sanctum**: ^4.3
+- **Laravel Tinker**: ^2.10.1
+
+**Dev dependencies:**
+- FakerPHP/Faker: ^1.23
+- Laravel Pint: ^1.24
+- Laravel Sail: ^1.41
+- PHPUnit: ^11.5.3
+- Mockery: ^1.6
+- Nunomaduro/Collision: ^8.6
+
+### Frontend
+- **Vite**: ^7.0.7
+- **TailwindCSS**: ^4.0.0
+- **@tailwindcss/vite**: ^4.0.0
+- **Laravel Vite Plugin**: ^2.0.0
+- **Axios**: ^1.11.0
+- **Concurrently**: ^9.0.1
+
+---
 
 ## Requirements
 
