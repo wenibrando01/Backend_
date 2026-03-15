@@ -87,3 +87,7 @@ Admin routes (`auth:sanctum` + `admin` middleware, `/api/admin/*`):
 - API unauthenticated responses return JSON `401` for `/api/*` routes.
 - CORS is configured through `config/cors.php` and `.env` values.
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8d895e4 (updated code)

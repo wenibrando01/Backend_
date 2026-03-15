@@ -10,6 +10,7 @@ class AnnouncementController extends Controller
 {
     public function index(Request $request)
     {
+
         $announcements = Announcement::query()
             ->where('is_published', true)
             ->where(function ($q) {
